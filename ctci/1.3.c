@@ -10,11 +10,12 @@ void URLify(char* A){
 	}
 	URLstrLen = strlen(A) + 3 * spaceCnt;
 	j = URLstrLen;
-	printf("%d %d\n", strlen(A), j);
+	printf("%d %d\n", (int)strlen(A), j);
 	for(i=strlen(A);i>=0;i--){
 		if(A[i] == ' '){
 			printf("i : %d j : %d\n", i, j);
-			strncpy(A[j-2], "%20", 3);
+			//strncpy(A[j-2], "%20", 3);
+			strncpy((A + j - 2), "%20", 3);
 			j -= 3;
 		} else {
 			printf("i : %d j : %d\n", i, j);
@@ -27,7 +28,9 @@ void URLify(char* A){
 int main(int argc, char** argv){
 	char A[256];
 	printf("input string A : ");
-	scanf("%s", &A);
+	//sscanf("%s", &A);
+	scanf("%[^\n]s", A);
+	URLify(A);
 	printf("After URLify, string A : %s\n", A);
 	return 0;
 }

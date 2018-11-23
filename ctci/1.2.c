@@ -26,9 +26,9 @@ int main(int argc, char** argv){
 	char A[256];
 	char B[256];
 	printf("input string A : ");
-	scanf("%s", &A);
+	scanf("%s", A);
 	printf("input string B : ");
-	scanf("%s", &B);
+	scanf("%s", B);
 	printf("string A : %s\n", A);
 	printf("string B : %s\n", B);
 	printf("two string is permutation? %s\n", isPermutation(A, B) ? "TRUE" : "FALSE");

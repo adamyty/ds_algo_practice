@@ -1,4 +1,4 @@
-EXEC = 1.1
+EXEC = 1.1 1.2 1.3
 
 all: $(EXEC)
 

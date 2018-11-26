@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+bool func_isOneAway(char* A, char* B){
+
+	int cntTblA[128] = {0};
+	int cntTblB[128] = {0};
+	int cntDiff = 0;
+	int strLenDiff = 0;
+	int i = 0;
+
+	//strlen(A-B) : -1 insert 1 remove 0 replace, assign to cntDiff and check for each element
+	// simplify, insert & remove can appear one diff, replace can appear 2 diff
+	strLenDiff = (int)(strlen(A) - strlen(B));
+
+	if(strLenDiff < -1 || 1 < strLenDiff)
+		return false;
+	//replace case
+	if(strLenDiff == 0)
+		cntDiff = 2;
+	//insert & remove case
+	if(abs(strLenDiff) == 1)
+		cntDiff = 1;
+
+	for(i=0;i<(int)strlen(A);i++){
+		cntTblA[(int)A[i]] += 1;
+	}
+
+	for(i=0;i<(int)strlen(B);i++){
+		cntTblB[(int)B[i]] += 1;
+	}
+
+	//check diff
+	for(i=0;i<128;i++){
+		if((cntTblA[i] - cntTblB[i]) != 0){
+			cntDiff -= 1;
+			if(cntDiff < 0)
+				return false;
+		}
+	}
+
+	if(cntDiff != 0)
+		return false;
+
+	return true;
+	
+
+}
+
+int main(int argc, char** argv){
+
+	char A[256] = "";
+	char B[256] = "";
+	bool isOneAway = false;
+
+	/* input two string with %[^n]s will cause problem. I guess is '\n' cause issue
+	printf("input string A :");
+	scanf("%[^\n]s", A);
+	printf("input string B : ");
+	scanf("%[^\n]s", B);
+	*/
+	printf("input string A :");
+	fgets(A, 256, stdin);
+	printf("input string B : ");
+	fgets(B, 256, stdin);
+
+	isOneAway = func_isOneAway(A, B);
+
+	printf("are string A & B one away? %s\n", isOneAway?"TRUE":"FALSE");
+
+}

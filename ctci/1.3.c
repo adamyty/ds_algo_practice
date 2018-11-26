@@ -14,8 +14,8 @@ void URLify(char* A){
 	for(i=strlen(A);i>=0;i--){
 		if(A[i] == ' '){
 			printf("i : %d j : %d\n", i, j);
-			//strncpy(A[j-2], "%20", 3);
-			strncpy((A + j - 2), "%20", 3);
+			strncpy(&A[j-2], "%20", 3);
+			//strncpy((A + j - 2), "%20", 3);
 			j -= 3;
 		} else {
 			printf("i : %d j : %d\n", i, j);

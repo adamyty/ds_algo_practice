@@ -9,11 +9,17 @@ static int hash(int key){
 }
 
 hashmap_t* alloc_hash_map(){
+	int i = 0;
 	printf("alloc hash map\n");
 	hashmap_t* hashTbl = malloc(HASHSIZE * sizeof(hashmap_t));
 	if(hashTbl == NULL){
 		printf("No memroy for hashtable");
 		return NULL;
+	}
+
+	for(i=0;i<HASHSIZE;i++){
+		hashTbl[i].element = NULL;
+		hashTbl[i].hashsize = HASHSIZE;
 	}
 
 	return hashTbl;
@@ -25,7 +31,7 @@ void free_hash_map(hashmap_t* hashTbl){
 	node_t* pBucket = NULL;
 	node_t* pFree = NULL;
 	for(i=0;i<HASHSIZE;i++){
-		printf("check %d bucket\n", i);
+		printf("check bucket %d : ", i);
 		//if( *(hashTbl+i).element != NULL){ //this code cause compile error
 		if(hashTbl[i].element != NULL){
 			printf("not null\n");
@@ -51,18 +57,21 @@ int hash_map_add_key_value(hashmap_t* hashTbl, int key, int value){
 		printf("No memory for node\n");
 		return -1;
 	}
+
 	node->key = key;
 	node->value = value;
 	node->next = NULL;
 
 	pBucket = hashTbl[hash(key)].element;
 	if(pBucket == NULL){
-		pBucket = node;
+		//pBucket = node; //stupid error
+		hashTbl[hash(key)].element = node;
 	} else {
 		while(pBucket->next != NULL)
 			pBucket = pBucket->next;
 
 		pBucket->next = node;
+        pBucket = node;
 	}
 
 	return 0;
@@ -93,5 +102,36 @@ int hash_map_display(hashmap_t* hashTbl){
 	}
 
 	return 0;
-
 }
+
+#if 0
+
+int main(int argc, char**argv){
+	hashmap_t* d = NULL;
+	int i = 0;
+	//int A[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	//int A[10] = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
+	int A[10] = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
+	d = alloc_hash_map();
+	if(d == NULL){
+		printf("d is NULL\n");
+		return -1;
+	}
+	/*printf("d : 0x%08x\n", d);
+	printf("&d : 0x%08x\n", &d);
+	printf("======================\n");
+	for(i=0;i<HASHSIZE;i++){
+		printf("&(d[%d].element) : 0x%08X\n", &(d[i].element));
+	}
+	printf("======================\n");*/
+	
+	for(i=0;i<10;i++){
+		hash_map_add_key_value(d, A[i], i);
+	}
+	printf("display hashmap : \n");
+	hash_map_display(d);
+
+	free_hash_map(d);
+	return 0;
+}
+#endif

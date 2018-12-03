@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <stdlib.h>
 #include "hashmap.h"
 
 
@@ -19,7 +19,7 @@ hashmap_t* alloc_hash_map(){
 
 	for(i=0;i<HASHSIZE;i++){
 		hashTbl[i].element = NULL;
-		hashTbl[i].hashsize = HASHSIZE;
+		//hashTbl[i].hashsize = HASHSIZE;
 	}
 
 	return hashTbl;
@@ -31,16 +31,18 @@ void free_hash_map(hashmap_t* hashTbl){
 	node_t* pBucket = NULL;
 	node_t* pFree = NULL;
 	for(i=0;i<HASHSIZE;i++){
-		printf("check bucket %d : ", i);
+		//printf("check bucket %d : ", i);
 		//if( *(hashTbl+i).element != NULL){ //this code cause compile error
 		if(hashTbl[i].element != NULL){
-			printf("not null\n");
+			//printf("not null\n");
 			pBucket = hashTbl[i].element;
 			while(pBucket != NULL){
 				pFree = pBucket;
 				pBucket = pBucket->next;
 				free(pFree);
 			}
+		}else{
+			//printf("is NULL\n");
 		}
 	}
 	free(hashTbl);
@@ -104,11 +106,31 @@ int hash_map_display(hashmap_t* hashTbl){
 	return 0;
 }
 
+bool isKey_in_hash_map(hashmap_t* hashTbl, int key){
+
+	node_t* pBucket = NULL;
+
+	if(hashTbl[hash(key)].element == NULL)
+		return false;
+
+	pBucket = hashTbl[hash(key)].element;
+	while(pBucket != NULL){
+		if(pBucket->value == key)
+			return true;
+
+		pBucket = pBucket->next;
+	}
+
+	return false;
+
+
+}
 #if 0
 
 int main(int argc, char**argv){
 	hashmap_t* d = NULL;
 	int i = 0;
+	bool isFound = false;
 	//int A[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	//int A[10] = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
 	int A[10] = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
@@ -126,10 +148,18 @@ int main(int argc, char**argv){
 	printf("======================\n");*/
 	
 	for(i=0;i<10;i++){
-		hash_map_add_key_value(d, A[i], i);
+		hash_map_add_key_value(d, A[i], A[i]);
 	}
 	printf("display hashmap : \n");
 	hash_map_display(d);
+
+	isFound = isKey_in_hash_map(d, 1);
+	printf("1 is in d? %s\n",isFound?"TRUE":"FALSE");
+	isFound = isKey_in_hash_map(d, 10);
+    printf("10 is in d? %s\n",isFound?"TRUE":"FALSE");
+
+
+
 
 	free_hash_map(d);
 	return 0;

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #define NELEMS(x) (sizeof(x)/sizeof((x)[0]))
 
@@ -57,6 +58,31 @@ int free_list(struct lnode* pHead){
 }
 
 int release_loop_list(struct lnode* pHead, struct lnode* pLoopStartNode){
+
+	bool isStepInLoop = false;
+	struct lnode* pPrev = NULL;
+
+	if(pHead == NULL || pLoopStartNode == NULL){
+		printf("[%s] pHead or pLoopStartNode is NULL\n", __func__);
+		return -1;
+	}
+
+	while(pHead != NULL){
+		
+		if(pHead == pLoopStartNode){
+			if(isStepInLoop){
+				// in loop and meet loop start node again
+				pPrev->next = NULL;
+				return 0;
+			}else{
+				// first step in loop
+				isStepInLoop = true;
+			}
+		}
+
+		pPrev = pHead;
+		pHead = pHead->next;
+	}
 
 	return 0;
 }
@@ -164,6 +190,8 @@ int main(int argc, char** argv){
 	}else{
 		printf("list has loop, loop start node is %c\n", pLoopStartNodeAnswer->val);
 	}
+
+	release_loop_list(pHeadA, pLoopStartNodeAnswer);
 
 	free_list(pHeadA);
 

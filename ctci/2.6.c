@@ -133,7 +133,9 @@ int main(int argc, char** argv){
 
 	isListPalindrome = isPalindrome_list(pHeadA);
 
-	printf("Is list palindrome? %s\n", isListPalindrome?"TRUE":"FALSE"); 
+	printf("Is list palindrome? %s\n", isListPalindrome?"TRUE":"FALSE");
+
+	free_list(pHeadA);
 
 	return 0;
 }

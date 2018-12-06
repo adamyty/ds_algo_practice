@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #define NELEMS(x) (sizeof(x)/sizeof((x[0])))
 int stackFloor[3] = {-1};
@@ -32,8 +33,8 @@ int display_array(int* pArray, int arrSz){
 int resize_array(int** pArray, int elemDiff, int* pArrSz){
 
 	int* pNew = NULL;
-	int* pFree = NULL;
 	int newArrSz = *pArrSz + elemDiff;
+	int i = 0;
 #if 0
 	pNew = realloc(*pArray, newArrSz*sizeof(int));
 
@@ -46,15 +47,24 @@ int resize_array(int** pArray, int elemDiff, int* pArrSz){
 	}
 #endif
 
-	pNew = malloc(sizeof(int)*elemDiff);
+	pNew = (int*)malloc(sizeof(int)*newArrSz);
 	if(pNew == NULL){
 		printf("[%s] fail to resize array\n", __func__);
         return -1;
 	}else{
+		/*printf("----------\n");
+		printf("pNew\t: 0X%08lX\n", (uintptr_t)pNew);
+		printf("*pArray\t: 0X%08lX\n", (uintptr_t)(*pArray));
+		printf("----------\n");*/
 		memset(pNew, 0, newArrSz);
-		memcpy(pNew, *pArray, *pArrSz);
+		//memcpy(pNew, *pArray, sizeof(int)*(*pArrSz));
+		memmove(pNew, *pArray, sizeof(int)*(*pArrSz));
+		/*for(i=0;i<*pArrSz;i++){
+			printf("*(*pArray + %d) : %d *(pNew + %d) : %d\n", i, *(*pArray + i), i, *(pNew + i));
+		}*/
 		free(*pArray);
 		*pArray = pNew;
+		*pArrSz = newArrSz;
 	}
 
 	return 0;
@@ -76,7 +86,7 @@ int push_stack(int** pArray, int* arrSz, int stackIdx, int val){
 		return -1;
 	}
 	//pStack = *pArray;
-	printf("push val : %d to stack[%d]\n", val, stackIdx);
+	printf("\npush val : %d to stack[%d]\n", val, stackIdx);
 	//check if stackTop[stackIdx] reach its ceiling
 	//if does, resize array
 	if(stackTop[stackIdx] == stackCeiling[stackIdx]){
@@ -113,9 +123,9 @@ int push_stack(int** pArray, int* arrSz, int stackIdx, int val){
 		pStack[stackTop[stackIdx]] = val;
 	}
 
-	printf("[%s] stackTop[%d] : %d\n", __func__, stackIdx, stackTop[stackIdx]);
+	/*printf("[%s] stackTop[%d] : %d\n", __func__, stackIdx, stackTop[stackIdx]);
 	printf("[%s] pStack[stackTop[%d]] : %d\n", __func__, stackIdx, pStack[stackTop[stackIdx]]);
-	printf("[%s] addr : 0x%08X\n", __func__, (pStack + stackTop[stackIdx]));
+	printf("[%s] addr : 0x%08X\n", __func__, (pStack + stackTop[stackIdx]));*/
 	return 0;
 }
 
@@ -158,9 +168,26 @@ int display_stack(int* pStack){
 		for(j=stackFloor[i];j<=stackTop[i];j++){
 			printf("|%d",pStack[j]);
 		}
-		printf("(TOP)|\n");
+		printf("(TOP)|\n\n");
 	}
 
+	return 0;
+}
+
+int pop_all(int* pStack){
+	
+	int i = 0;
+	
+	for(i=0;i<3;i++){
+		printf("pop_all stack[%d]\n", i);
+		while(stackTop[i] != (stackFloor[i] - 1)){
+			printf("pop : %d\n", pStack[stackTop[i]]);
+			//remove element from stack[i]
+			pStack[stackTop[i]] = 0;
+			stackTop[i] -= 1;
+		}
+		printf("\n");
+	}
 	return 0;
 }
 int main(int argc, char** argv){
@@ -184,7 +211,7 @@ int main(int argc, char** argv){
 	int arrSz = 3;
 	int i = 0, j = 0;
 
-	pArray = malloc(arrSz * sizeof(int));
+	pArray = (int*)malloc(arrSz * sizeof(int));
 
 	init_stack(arrSz);
 #if 0
@@ -202,13 +229,18 @@ int main(int argc, char** argv){
 	display_stack(pArray);
 	for(i=0;i<3;i++){
 		for(j=0;j<3;j++){
-			push_stack(&pArray, &arrSz, i, A[i][j]);
-			printf("%d %d arrSz : %d\n",i , j, arrSz);
+			//push_stack(&pArray, &arrSz, i, A[i][j]);
+			push_stack(&pArray, &arrSz, j, A[j][i]);
+			/*printf("%d %d arrSz : %d\n",i , j, arrSz);
 			printf("element : %d\n", *(pArray + i*3 + j));
-			printf("addr : 0x%08X\n", (pArray + i*3 + j));
+			printf("addr : 0x%08X\n", (pArray + i*3 + j));*/
 		}
 	}
 	printf("\nafter push value to stack\n");
+	display_stack(pArray);
+	printf("\npop out all stack\n");
+	pop_all(pArray);
+	printf("\nafter pop out all stack\n");
 	display_stack(pArray);
 	free(pArray);
 	return 0;
